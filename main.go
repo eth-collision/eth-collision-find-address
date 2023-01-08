@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/big"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
@@ -14,6 +15,8 @@ import (
 var totalFile = "total.txt"
 var accountsFile = "accounts.txt"
 var speedFile = "speed.txt"
+
+var locker = sync.Mutex{}
 
 func main() {
 	msg := make(chan *big.Int)
@@ -41,10 +44,19 @@ func main() {
 			appendFile(speedFile, text)
 			sendMsgText(text)
 		case count := <-msg:
-			total = total.Add(total, count)
+			total = bigIntAddMutex(total, count)
+			fmt.Println(total, count)
 			writeFile(totalFile, total.String())
 		}
 	}
+}
+
+func bigIntAddMutex(a, b *big.Int) *big.Int {
+	locker.Lock()
+	defer locker.Unlock()
+	c := new(big.Int)
+	c.Add(a, b)
+	return c
 }
 
 func generateAccountJob(msg chan *big.Int) {

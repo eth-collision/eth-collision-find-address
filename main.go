@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
-			text := fmt.Sprintf("Total: %d, Speed: %d, Addresses: %d", total, speed, addresses)
+			text := fmt.Sprintf("Total: %d, Speed: %d, Addresses: %d\n", total, speed, addresses)
 			appendFile("speed.txt", text)
 			sendMsgText(text)
 		case count := <-msg:

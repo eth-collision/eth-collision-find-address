@@ -4,49 +4,60 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
+	"math/big"
 	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
+var totalFile = "total.txt"
+var accountsFile = "accounts.txt"
+var speedFile = "speed.txt"
+
 func main() {
-	msg := make(chan int)
+	msg := make(chan *big.Int)
 	for i := 0; i < 4; i++ {
 		go generateAccountJob(msg)
 	}
-	total := 0
-	lastTotal := 0
+	totalStr := readFile(totalFile)
+	n := new(big.Int)
+	total, ok := n.SetString(totalStr, 10)
+	if !ok {
+		total = big.NewInt(0)
+	}
+	lastTotal := total
 	tick := time.Tick(1 * time.Hour)
 	for {
 		select {
 		case <-tick:
-			speed := total - lastTotal
+			speed := total.Sub(total, lastTotal)
 			lastTotal = total
-			addresses, err := fileCountLine("accounts.txt")
+			addresses, err := fileCountLine(accountsFile)
 			if err != nil {
 				log.Println(err)
 			}
-			text := fmt.Sprintf("Total: %d, Speed: %d, Addresses: %d\n", total, speed, addresses)
-			appendFile("speed.txt", text)
+			text := fmt.Sprintf("Total: %d\nSpeed: %d/h\nAddresses: %d\n", total, speed, addresses)
+			appendFile(speedFile, text)
 			sendMsgText(text)
 		case count := <-msg:
-			total += count
+			total = total.Add(total, count)
+			writeFile(totalFile, total.String())
 		}
 	}
 }
 
-func generateAccountJob(msg chan int) {
-	count := 0
+func generateAccountJob(msg chan *big.Int) {
+	count := big.NewInt(0)
 	tick := time.Tick(1 * time.Minute)
 	for {
 		select {
 		case <-tick:
 			msg <- count
-			count = 0
+			count = big.NewInt(0)
 		default:
 			generateAccount()
-			count++
+			count = count.Add(count, big.NewInt(1))
 		}
 	}
 }
@@ -72,6 +83,6 @@ func handleAccount(privateKey string, address string) {
 	if checkAddress(address) {
 		log.Println("Found: ", privateKey, address)
 		text := fmt.Sprintf("%s,%s\n", privateKey, address)
-		appendFile("accounts.txt", text)
+		appendFile(accountsFile, text)
 	}
 }

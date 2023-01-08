@@ -15,6 +15,7 @@ func writeFile(filename string, content string) {
 	}
 	defer file.Close()
 	file.WriteString(content)
+	file.Sync()
 }
 
 func appendFile(filename string, text string) {
@@ -54,4 +55,25 @@ func fileCountLine(filename string) (int, error) {
 			return -1, err
 		}
 	}
+}
+
+func readFile(filename string) string {
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Println(err)
+	}
+	defer file.Close()
+	buf := make([]byte, 1024)
+	var content string
+	for {
+		n, err := file.Read(buf)
+		if n == 0 {
+			break
+		}
+		if err != nil && err != io.EOF {
+			log.Println(err)
+		}
+		content += string(buf[:n])
+	}
+	return content
 }

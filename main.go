@@ -16,7 +16,7 @@ func main() {
 	}
 	total := 0
 	lastTotal := 0
-	tick := time.Tick(1 * time.Second)
+	tick := time.Tick(1 * time.Hour)
 	for {
 		select {
 		case <-tick:

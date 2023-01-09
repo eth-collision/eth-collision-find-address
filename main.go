@@ -18,6 +18,10 @@ var speedFile = "speed.txt"
 
 var locker = sync.Mutex{}
 
+// second
+var rollupTime time.Duration = 1 * 60 * 60
+var submitTime time.Duration = 1 * 60
+
 func main() {
 	msg := make(chan *big.Int)
 	for i := 0; i < 4; i++ {
@@ -30,11 +34,11 @@ func main() {
 		total = big.NewInt(0)
 	}
 	lastTotal := total
-	tick := time.Tick(1 * time.Hour)
+	tick := time.Tick(rollupTime * time.Second)
 	for {
 		select {
 		case <-tick:
-			speed := total.Sub(total, lastTotal)
+			speed := new(big.Int).Sub(total, lastTotal)
 			lastTotal = total
 			addresses, err := fileCountLine(accountsFile)
 			if err != nil {
@@ -45,7 +49,6 @@ func main() {
 			sendMsgText(text)
 		case count := <-msg:
 			total = bigIntAddMutex(total, count)
-			fmt.Println(total, count)
 			writeFile(totalFile, total.String())
 		}
 	}
@@ -61,7 +64,7 @@ func bigIntAddMutex(a, b *big.Int) *big.Int {
 
 func generateAccountJob(msg chan *big.Int) {
 	count := big.NewInt(0)
-	tick := time.Tick(1 * time.Minute)
+	tick := time.Tick(submitTime * time.Second)
 	for {
 		select {
 		case <-tick:

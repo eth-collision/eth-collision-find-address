@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"io"
 	"log"
 	"os"
@@ -31,11 +30,6 @@ func appendFile(filename string, text string) {
 	f.Sync()
 }
 
-func isFileExist(filename string) bool {
-	_, err := os.Stat("/path/to/whatever")
-	return !errors.Is(err, os.ErrNotExist)
-}
-
 func fileCountLine(filename string) (int, error) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -52,7 +46,7 @@ func fileCountLine(filename string) (int, error) {
 		case err == io.EOF:
 			return count, nil
 		case err != nil:
-			return -1, err
+			return 0, err
 		}
 	}
 }

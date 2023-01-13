@@ -19,7 +19,7 @@ var speedFile = "speed.txt"
 var locker = sync.Mutex{}
 
 // second
-var rollupTime time.Duration = 1 * 60 * 10
+var rollupTime time.Duration = 1 * 60 * 60
 var submitTime time.Duration = 1 * 60
 
 func main() {
@@ -45,10 +45,10 @@ func main() {
 				log.Println(err)
 			}
 			text := fmt.Sprintf(""+
-				"[ETH collision find address]\n"+
-				"Total:     %d\n"+
-				"Speed:     %d\n"+
-				"Addresses: %d\n",
+				"[ETH Collision Find Address]\n"+
+				"Total: %d\n"+
+				"Speed: %d\n"+
+				"Addrs: %d\n",
 				total, speed, addresses)
 			appendFile(speedFile, text)
 			sendMsgText(text)

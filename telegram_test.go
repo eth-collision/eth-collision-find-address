@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func Test_sendMsgText(t *testing.T) {
 	type args struct {
@@ -22,4 +25,14 @@ func Test_sendMsgText(t *testing.T) {
 			sendMsgText(tt.args.text)
 		})
 	}
+}
+
+func Test_a(t *testing.T) {
+	a := fmt.Sprintf(""+
+		"[ETH collision find address]\n"+
+		"Total:%d\n"+
+		"Speed:%d\n"+
+		"Addrs: %d\n",
+		18925693, 9932857, 0)
+	print(a)
 }

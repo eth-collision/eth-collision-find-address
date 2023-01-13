@@ -93,7 +93,7 @@ func generateAccount() {
 }
 
 func checkAddress(address string) bool {
-	if strings.HasPrefix(address, "0x0000000000") {
+	if strings.HasPrefix(address, "0x0000000") {
 		return true
 	}
 	return false

@@ -19,12 +19,12 @@ var speedFile = "speed.txt"
 var locker = sync.Mutex{}
 
 // second
-var rollupTime time.Duration = 1 * 60 * 60
+var rollupTime time.Duration = 1 * 60 * 10
 var submitTime time.Duration = 1 * 60
 
 func main() {
 	msg := make(chan *big.Int)
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 10; i++ {
 		go generateAccountJob(msg)
 	}
 	totalStr := readFile(totalFile)
@@ -44,7 +44,12 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
-			text := fmt.Sprintf("Total: %d\nSpeed: %d/h\nAddresses: %d\n", total, speed, addresses)
+			text := fmt.Sprintf(""+
+				"[ETH collision find address]\n"+
+				"Total:     %d\n"+
+				"Speed:     %d\n"+
+				"Addresses: %d\n",
+				total, speed, addresses)
 			appendFile(speedFile, text)
 			sendMsgText(text)
 		case count := <-msg:
@@ -88,7 +93,7 @@ func generateAccount() {
 }
 
 func checkAddress(address string) bool {
-	if strings.HasPrefix(address, "0x8888") && strings.HasSuffix(address, "8888") {
+	if strings.HasPrefix(address, "0x0000000000") {
 		return true
 	}
 	return false

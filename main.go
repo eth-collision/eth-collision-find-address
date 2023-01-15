@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	tool "github.com/eth-collision/eth-collision-tool"
 	"log"
 	"math/big"
 	"strings"
@@ -44,14 +45,17 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
+			totalStr := tool.FormatBigInt(*total)
+			speedStr := tool.FormatBigInt(*speed)
+			addrsStr := tool.FormatInt(int64(addresses))
 			text := fmt.Sprintf(""+
 				"[ETH Collision Find Address]\n"+
-				"Total: %d\n"+
-				"Speed: %d\n"+
-				"Addrs: %d\n",
-				total, speed, addresses)
+				"Total: %s\n"+
+				"Speed: %s\n"+
+				"Addrs: %s\n",
+				totalStr, speedStr, addrsStr)
 			appendFile(speedFile, text)
-			sendMsgText(text)
+			tool.SendMsgText(text)
 		case count := <-msg:
 			total = bigIntAddMutex(total, count)
 			writeFile(totalFile, total.String())

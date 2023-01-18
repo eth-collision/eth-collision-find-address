@@ -6,7 +6,7 @@ import (
 	tool "github.com/eth-collision/eth-collision-tool"
 	"log"
 	"math/big"
-	"strings"
+	"regexp"
 	"sync"
 	"time"
 
@@ -35,10 +35,11 @@ func main() {
 		total = big.NewInt(0)
 	}
 	lastTotal := total
-	tick := time.Tick(rollupTime * time.Second)
+	ticker, callback := tool.NewProxyTicker(rollupTime * time.Second)
+	go callback()
 	for {
 		select {
-		case <-tick:
+		case <-ticker:
 			speed := new(big.Int).Sub(total, lastTotal)
 			lastTotal = total
 			addresses, err := tool.FileCountLine(accountsFile)
@@ -96,8 +97,10 @@ func generateAccount() {
 	handleAccount(privateKey, address)
 }
 
+var re = regexp.MustCompile(`0x0000000|0x1111111|0x2222222|0x3333333|0x4444444|0x5555555|0x6666666|0x7777777|0x8888888|0x9999999|0xaaaaaaaa|0xbbbbbbbb|0xcccccccc|0xdddddddd|0xeeeeeeee|0xffffffff`)
+
 func checkAddress(address string) bool {
-	if strings.HasPrefix(address, "0x0000000") {
+	if re.MatchString(address) {
 		return true
 	}
 	return false

